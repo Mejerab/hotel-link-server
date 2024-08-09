@@ -7,6 +7,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 app.use(cors({
   origin: [
+    'http://localhost:5173',
     'https://hotel-link-eb221.web.app',
     'https://hotel-link-eb221.firebaseapp.com'
   ],
