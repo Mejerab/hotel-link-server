@@ -55,7 +55,7 @@ const cookieOptions = {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     const roomsCollection = client.db('hotelDB').collection('rooms');
     const messageCollection = client.db('hotelDB').collection('messages');
     const bookingCollection = client.db('hotelDB').collection('bookings');
