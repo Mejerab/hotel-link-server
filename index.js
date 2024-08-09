@@ -131,75 +131,7 @@ async function run() {
       res.send({ count });
     })
 
-    // Reviews
-    app.post('/reviews', async(req, res)=>{
-      const query = req.body;
-      const result = await reviewsCollection.insertOne(query);
-      res.send(result);
-  })
-  app.get('/reviews', async(req, res)=>{
-    const result = await reviewsCollection.find().toArray();
-    res.send(result);
-  })
-  app.get('/reviews/:id', async(req, res)=>{
-    const id = req.params.id;
-    const query = {_id: new ObjectId(id)};
-    const result = await reviewsCollection.findOne(query);
-    res.send(result);
-  })
 
-    // Messages
-    app.post('/messages', async (req, res) => {
-      const message = req.body;
-      console.log(message);
-      const result = await messageCollection.insertOne(message);
-      res.send(result);
-    })
-    app.get('/messages', async (req, res) => {
-      const result = await messageCollection.find().toArray();
-      res.send(result);
-    })
-
-    // Bookings
-    app.post('/bookings', async (req, res) => {
-      const booking = req.body;
-      const result = await bookingCollection.insertOne(booking);
-      res.send(result);
-    })
-    app.get('/bookings', logger, verifyToken, async (req, res) => {
-      console.log('Logged user', req.query, req.user);
-      if (req.query?.email !== req.user?.email) {
-        return res.status(403).send({ message: 'Forbidden Access' })
-      }
-      let query = {};
-      if (req.query?.email) {
-        query = { email: req.query.email };
-      }
-      const result = await bookingCollection.find(query).toArray();
-      res.send(result);
-    })
-    app.put('/bookings/:id', async(req, res)=>{
-      const id = req.params.id;
-      const filter = {_id: new ObjectId(id)};
-      const date = req.body;
-      console.log(date);
-      const dateList = {
-        $set: {
-          day: date.day,
-          month: date.month,
-          year: date.year
-        }
-      }
-      const result = await bookingCollection.updateOne(filter, dateList);
-      res.send(result);
-    })
-    app.delete('/bookings/:id', async (req, res) => {
-      const id = req.params.id;
-      console.log(id);
-      const query = { _id: new ObjectId(id) };
-      const result = await bookingCollection.deleteOne(query);
-      res.send(result);
-    })
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
