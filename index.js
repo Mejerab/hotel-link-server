@@ -131,6 +131,23 @@ async function run() {
       res.send({ count });
     })
 
+    // Reviews
+    app.post('/reviews', async(req, res)=>{
+      const query = req.body;
+      const result = await reviewsCollection.insertOne(query);
+      res.send(result);
+  })
+  app.get('/reviews', async(req, res)=>{
+    const result = await reviewsCollection.find().toArray();
+    res.send(result);
+  })
+  app.get('/reviews/:id', async(req, res)=>{
+    const id = req.params.id;
+    const query = {_id: new ObjectId(id)};
+    const result = await reviewsCollection.findOne(query);
+    res.send(result);
+  })
+
 
 
     // Send a ping to confirm a successful connection
