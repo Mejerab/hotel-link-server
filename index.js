@@ -148,7 +148,19 @@ async function run() {
     res.send(result);
   })
 
+    // Messages
+    app.post('/messages', async (req, res) => {
+      const message = req.body;
+      console.log(message);
+      const result = await messageCollection.insertOne(message);
+      res.send(result);
+    })
+    app.get('/messages', async (req, res) => {
+      const result = await messageCollection.find().toArray();
+      res.send(result);
+    })
 
+   
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
