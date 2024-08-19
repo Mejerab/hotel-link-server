@@ -36,22 +36,25 @@ const logger = (req, res, next) => {
 }
 const verifyToken = (req, res, next) => {
   const token = req.cookies?.token;
-  console.log('TOKEN:', token);
+  console.log(req.cookies);
+  
   if (!token) {
-    return res.status(401).send({ message: 'Unauthorized Access' })
+    return res.status(401).send({ message: 'Unauthorized' })
   }
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decode) => {
-    if (err) {
-      return res.status(403).send({ message: 'Unauthorized Access' })
-    }
-    req.user = decode
-    next();
-  })
+  else {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decode) => {
+      if (err) {
+        return res.status(401).send({ message: 'Unauthorized Access' })
+      }
+      req.user = decode
+      next();
+    })
+  }
 }
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production' ? false : true,
-  sameTime: process.env.NODE_ENV === 'production' ? 'none' : 'strict'
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
 }
 
 async function run() {
@@ -66,14 +69,15 @@ async function run() {
     // Auth related api
     app.post('/jwt', async (req, res) => {
       const user = req.body;
-      console.log('User in use', user);
+      // console.log('User in use', user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
-      res.cookie('token', token)
-        .send({ success: true })
+      // console.log(token);
+      
+      res.cookie('token', token, cookieOptions).send({ success: true })
     })
     app.post('/logout', async (req, res) => {
       const user = req.body;
-      console.log("Logging out user", user);
+      // console.log("Logging out user", user);
       res.clearCookie('token', { ...cookieOptions, maxAge: 0 }).send({ success: true });
     })
 
@@ -94,7 +98,7 @@ async function run() {
         if (condition === 'mixed') {
           sorting = null;
         }
-        else if (condition === 'inorder') {
+        else if (condition === 'disorder') {
           sorting = { price_per_night: 1 }
         }
         else {
@@ -169,7 +173,7 @@ async function run() {
       res.send(result);
     })
     app.get('/bookings', logger, verifyToken, async (req, res) => {
-      console.log('Logged user', req.query, req.user);
+      // console.log('Logged user', req.query, req.user);
       if (req.query?.email !== req.user?.email) {
         return res.status(403).send({ message: 'Forbidden Access' })
       }
@@ -184,7 +188,7 @@ async function run() {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const date = req.body;
-      console.log(date);
+      // console.log(date);
       const dateList = {
         $set: {
           day: date.day,
@@ -197,7 +201,6 @@ async function run() {
     })
     app.delete('/bookings/:id', async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const query = { _id: new ObjectId(id) };
       const result = await bookingCollection.deleteOne(query);
       res.send(result);
